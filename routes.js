@@ -24,7 +24,11 @@ const asyncHandler = (cb) => {
 
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
   const user = await req.currentUser;
-  res.json({user});
+  if(user) {
+    res.json({user});
+  } else {
+    res.status(401).json('Access Denied')
+  }
 }));
 
 //This route creates a new user
@@ -53,7 +57,7 @@ router.post('/courses', authenticateUser, asyncHandler(async (req, res, next) =>
     const course = await Course.create(req.body);
     res.status(201).location(`/courses/${course.id}`).end();
   } else {
-    next()
+    res.status(401).json('Access Denied')
   }
 }));
 
@@ -64,7 +68,7 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res, next)
     await course.update(req.body)
     res.status(204).end();
   } else {
-    next()
+    res.status(401).json('Access Denied')
   }
 }))
 router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
@@ -74,7 +78,7 @@ router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, ne
     await course.destroy()
     res.status(204).end()
   } else {
-    next()
+    res.status(401).json('Access Denied')
   }
 }))
 
