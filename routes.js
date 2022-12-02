@@ -13,7 +13,7 @@ const asyncHandler = (cb) => {
     } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
         const errors = error.errors.map(err => err.message);
-        res.status(401).json({ errors });   
+        res.status(400).json({ errors });   
       } else {
         // Forward error to the global error handler
         next(error);
@@ -47,9 +47,14 @@ router.get('/courses/:id', asyncHandler(async(req, res, next) => {
   course ? res.json(course) : next();
 }))
 
-router.post('/courses', asyncHandler(async (req, res) => {
-  const course = await Course.create(req.body);
-  res.status(201).location(`/courses/${course.id}`).end();
+router.post('/courses', authenticateUser, asyncHandler(async (req, res, next) => {
+  const user = await req.currentUser
+  if (user) {
+    const course = await Course.create(req.body);
+    res.status(201).location(`/courses/${course.id}`).end();
+  } else {
+    next()
+  }
 }));
 
 router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
