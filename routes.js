@@ -5,6 +5,7 @@ const router = express.Router();
 const { User, Course } = require('./models');
 const { authenticateUser } = require('./middleware/auth-user');
 
+//middleware
 const asyncHandler = (cb) => {
   return async (req, res, next) => {
     try {
@@ -12,7 +13,7 @@ const asyncHandler = (cb) => {
     } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
         const errors = error.errors.map(err => err.message);
-        res.status(400).json({ errors });   
+        res.status(401).json({ errors });   
       } else {
         // Forward error to the global error handler
         next(error);
@@ -20,12 +21,13 @@ const asyncHandler = (cb) => {
     }
   }
 }
-//
+
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
   const user = await req.currentUser;
   res.json({user});
 }));
 
+//This route creates a new user
 router.post('/users', asyncHandler(async (req, res) => {
   await User.create(req.body);
   res.status(201).location("/").end();
@@ -70,7 +72,5 @@ router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, ne
     next()
   }
 }))
-
-
 
 module.exports = router;
