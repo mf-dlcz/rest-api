@@ -62,3 +62,5 @@ typings/
 
 # SQLite database file
 *.db
+
+.DS_store
