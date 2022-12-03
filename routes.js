@@ -31,12 +31,13 @@ router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
   }
 }));
 
-//This route creates a new user
+//Route creates a new user
 router.post('/users', asyncHandler(async (req, res) => {
   await User.create(req.body);
   res.status(201).location("/").end();
 }));
 
+//Route returns all courses including the User associated with each course
 router.get('/courses', asyncHandler(async (req, res) => {
   let courses = await Course.findAll({
     include: {model: User}
@@ -44,6 +45,7 @@ router.get('/courses', asyncHandler(async (req, res) => {
   res.json(courses);
 }))
 
+//Route returns corresponding course including the user associated with course
 router.get('/courses/:id', asyncHandler(async(req, res, next) => {
   let course = await Course.findByPk(req.params.id, {
     include: {model: User}
@@ -51,6 +53,7 @@ router.get('/courses/:id', asyncHandler(async(req, res, next) => {
   course ? res.json(course) : next();
 }))
 
+//Route creates a new course, sets location header to the URI 
 router.post('/courses', authenticateUser, asyncHandler(async (req, res, next) => {
   const user = await req.currentUser
   if (user) {
@@ -61,6 +64,7 @@ router.post('/courses', authenticateUser, asyncHandler(async (req, res, next) =>
   }
 }));
 
+//Route updates the corresponding course
 router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
   let course = await Course.findByPk(req.params.id)
   let user = await req.currentUser
@@ -71,6 +75,8 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res, next)
     res.status(401).json('Access Denied')
   }
 }))
+
+//Route deletes the corresponding course
 router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
   let course = await Course.findByPk(req.params.id)
   let user = await req.currentUser
