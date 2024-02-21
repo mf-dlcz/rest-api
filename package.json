@@ -1,5 +1,5 @@
 {
-  "name": "rest-api-sql-v3",
+  "name": "rest-api",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -21,6 +21,6 @@
     "sqlite3": "^5.1.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.22"
   }
 }
